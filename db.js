@@ -133,6 +133,13 @@ function getTopUsers(limit = 10) {
     return db.prepare('SELECT * FROM users ORDER BY xp DESC LIMIT ?').all(limit);
 }
 
+function getStats() {
+    const totalUsers = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
+    const searchingUsers = db.prepare('SELECT COUNT(*) as count FROM users WHERE status = "searching"').get().count;
+    const chattingUsers = db.prepare('SELECT COUNT(*) as count FROM users WHERE status = "chatting"').get().count;
+    return { totalUsers, searchingUsers, chattingUsers };
+}
+
 function banUser(id, days = 365) {
     const banUntil = new Date();
     banUntil.setDate(banUntil.getDate() + days);
@@ -159,6 +166,7 @@ module.exports = {
     createTransaction,
     updateTransaction,
     getTopUsers,
+    getStats,
     banUser,
     unbanUser
 };

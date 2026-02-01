@@ -40,6 +40,11 @@ const mainKeyboard = Markup.keyboard([
     ['🏆 Reyting', '📜 Qoidalar']
 ]).resize();
 
+const adminKeyboard = Markup.keyboard([
+    ['📊 Statistika', '📢 Reklama yuborish'],
+    ['🚫 Bandan ochish', '🏠 Asosiy menyu']
+]).resize();
+
 const searchKeyboard = Markup.keyboard([
     ['❌ Qidiruvni to\'xtatish']
 ]).resize();
@@ -226,6 +231,32 @@ bot.on('callback_query', async (ctx) => {
 });
 
 // --- Admin Controls ---
+bot.command('admin', (ctx) => {
+    if (ctx.from.id !== ADMIN_ID) return;
+    ctx.reply('🔧 Admin panelga xush kelibsiz:', adminKeyboard);
+});
+
+bot.hears('📊 Statistika', (ctx) => {
+    if (ctx.from.id !== ADMIN_ID) return;
+    const stats = db.getStats();
+    ctx.reply(
+        `📊 *Bot statistikasi:*\n\n` +
+        `👤 Jami foydalanuvchilar: ${stats.totalUsers}\n` +
+        `🔎 Qidiruvdagilar: ${stats.searchingUsers}\n` +
+        `💬 Suhbatdagilar: ${stats.chattingUsers}`,
+        { parse_mode: 'Markdown' }
+    );
+});
+
+bot.hears('🏠 Asosiy menyu', (ctx) => {
+    ctx.reply('🏠 Asosiy menyuga qaytdingiz.', mainKeyboard);
+});
+
+bot.hears('📢 Reklama yuborish', (ctx) => {
+    if (ctx.from.id !== ADMIN_ID) return;
+    ctx.reply('Reklama xabarini yuboring (Text, Rasm yoki Video). Men uni barcha foydalanuvchilarga tarqataman.\n\nBekor qilish uchun /admin deb yozing.');
+});
+
 bot.command('ban', (ctx) => {
     if (ctx.from.id !== ADMIN_ID) return;
     const userId = ctx.message.text.split(' ')[1];
