@@ -1,0 +1,5 @@
+node_modules
+.env
+chat.db
+*.db-journal
+test-db.js
