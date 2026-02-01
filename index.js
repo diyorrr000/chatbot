@@ -1,6 +1,26 @@
 require('dotenv').config();
 const { Telegraf, Markup } = require('telegraf');
 const db = require('./db');
+const http = require('http');
+
+// Simple HTTP server for Render and self-ping
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('Bot is running!');
+});
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`Keep-alive server listening on port ${PORT}`);
+});
+
+// Self-ping to avoid sleep (Render Free Tier)
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+if (RENDER_URL) {
+    setInterval(() => {
+        http.get(RENDER_URL);
+        console.log('Self-ping sent to keep alive');
+    }, 10 * 60 * 1000); // Ping every 10 minutes
+}
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const ADMIN_ID = parseInt(process.env.ADMIN_ID);
