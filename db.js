@@ -1,7 +1,15 @@
+const fs = require('fs');
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const db = new Database(path.join(__dirname, 'chat.db'));
+// Ensure data directory exists for persistent storage if needed
+const dbDir = process.env.IS_RENDER ? '/opt/render/project/src/data' : __dirname;
+if (process.env.IS_RENDER && !fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const dbPath = process.env.IS_RENDER ? path.join(dbDir, 'chat.db') : path.join(__dirname, 'chat.db');
+const db = new Database(dbPath);
 
 // Initialize database with new schema
 function initDb() {
