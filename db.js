@@ -133,6 +133,16 @@ function getTopUsers(limit = 10) {
     return db.prepare('SELECT * FROM users ORDER BY xp DESC LIMIT ?').all(limit);
 }
 
+function banUser(id, days = 365) {
+    const banUntil = new Date();
+    banUntil.setDate(banUntil.getDate() + days);
+    db.prepare('UPDATE users SET ban_until = ?, status = "idle", partner_id = NULL WHERE id = ?').run(banUntil.toISOString(), id);
+}
+
+function unbanUser(id) {
+    db.prepare('UPDATE users SET ban_until = NULL WHERE id = ?').run(id);
+}
+
 module.exports = {
     initDb,
     getUser,
@@ -148,5 +158,7 @@ module.exports = {
     subtractDico,
     createTransaction,
     updateTransaction,
-    getTopUsers
+    getTopUsers,
+    banUser,
+    unbanUser
 };

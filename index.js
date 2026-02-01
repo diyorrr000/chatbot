@@ -225,6 +225,35 @@ bot.on('callback_query', async (ctx) => {
     }
 });
 
+// --- Admin Controls ---
+bot.command('ban', (ctx) => {
+    if (ctx.from.id !== ADMIN_ID) return;
+    const userId = ctx.message.text.split(' ')[1];
+    if (!userId) return ctx.reply('Foydalanuvchi ID sini yozing. Masalan: /ban 1234567');
+
+    try {
+        db.banUser(userId);
+        ctx.reply(`Foydalanuvchi (${userId}) muvaffaqiyatli bloklandi. 🚫`);
+        bot.telegram.sendMessage(userId, 'Siz admin tomonidan bloklandingiz! 🚫').catch(() => { });
+    } catch (e) {
+        ctx.reply('Xatolik: Bunday ID li foydalanuvchi topilmadi yoki xato ID kiritildi.');
+    }
+});
+
+bot.command('unban', (ctx) => {
+    if (ctx.from.id !== ADMIN_ID) return;
+    const userId = ctx.message.text.split(' ')[1];
+    if (!userId) return ctx.reply('Foydalanuvchi ID sini yozing. Masalan: /unban 1234567');
+
+    try {
+        db.unbanUser(userId);
+        ctx.reply(`Foydalanuvchi (${userId}) blokdan chiqarildi. ✅`);
+        bot.telegram.sendMessage(userId, 'Sizning blokirovkangiz admin tomonidan olib tashlandi. ✅').catch(() => { });
+    } catch (e) {
+        ctx.reply('Xatolik yuz berdi.');
+    }
+});
+
 // --- General Stats & Info ---
 bot.hears('📜 Qoidalar', (ctx) => {
     ctx.reply(
