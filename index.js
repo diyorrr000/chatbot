@@ -116,6 +116,7 @@ bot.hears(['Male 👱‍♂️', 'Female 👱‍♀️'], async (ctx) => {
 // --- Main Features ---
 bot.hears('🔎 Qidiruv', async (ctx) => {
     const user = db.getUser(ctx.from.id);
+    if (!user) return ctx.reply('Iltimos, avval /start buyrug\'ini bosing.');
     if (!user.gender) return ctx.reply('Avval jinsingizni tanlang /start');
 
     if (user.status === 'chatting') return ctx.reply('Siz allaqachon suhbatdasiz!');
@@ -138,7 +139,7 @@ bot.hears('🔎 Qidiruv', async (ctx) => {
 
 bot.hears('❌ Qidiruvni to\'xtatish', (ctx) => {
     const user = db.getUser(ctx.from.id);
-    if (user.status === 'searching') {
+    if (user && user.status === 'searching') {
         db.updateStatus(ctx.from.id, 'idle');
         ctx.reply('Qidiruv to\'xtatildi.', mainKeyboard);
     }
@@ -146,7 +147,7 @@ bot.hears('❌ Qidiruvni to\'xtatish', (ctx) => {
 
 bot.hears('❌ Suhbatni yakunlash', (ctx) => {
     const user = db.getUser(ctx.from.id);
-    if (user.status === 'chatting') {
+    if (user && user.status === 'chatting') {
         const partnerId = user.partner_id;
         db.updateStatus(ctx.from.id, 'idle');
         db.updateStatus(partnerId, 'idle');
